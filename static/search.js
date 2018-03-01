@@ -103,15 +103,46 @@ function setFocusedItem(f) {
 
 // ==== ajax ====
 
+function xhr(url, cb) {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url, false);
+  xhr.send();
+
+  if (xhr.status != 200) {
+    cb(false);
+  } else {
+    cb(JSON.parse(xhr.responseText));
+  }
+}
+
+function request(url, cb) {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url, true);
+  xhr.send(); // (1)
+  xhr.onreadystatechange = function() { // (3)
+    if (xhr.readyState != 4) {
+      return;
+    }
+    if (xhr.status != 200) {
+      try {
+        cb(JSON.parse(xhr.statusText));
+      } catch (e) {
+        cb(false);
+      }
+    } else {
+      cb(false);
+    }
+  }
+}
+
 function doSearch() {
   var text = inputEl.value.trim();
+  var url = 'https://api.github.com/search/repositories?q=' + encodeURIComponent(text);
 
-  if (text !== '') {
-    fetch('https://api.github.com/search/repositories?q=' + encodeURIComponent(text))
-      .then(function(res) { return res.json(); })
-      .then(function(json) { return showSuggestions(json && json.items); })
-      .catch(function(e) { console.error(e) });
-  }
+  // using xhr instead of fetch
+  xhr(url, function(res) {
+    showSuggestions(res && res.items);
+  })
 }
 
 // ==== entry point ====

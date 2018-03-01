@@ -236,3 +236,18 @@ h4 {
   flex: 1;
   overflow-y: auto;
 }
+
+/* Fix appearance on ie 10 & 11 */
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  .limit-width > * {
+    max-width: none;
+  }
+}
+
+/************************* Accesability styles *************************/
+
+.noscript {
+  font-size: 1.3rem;
+  text-align: center;
+  padding: 2rem;
+}
