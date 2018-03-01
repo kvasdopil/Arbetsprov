@@ -90,9 +90,11 @@ h4 {
   transition: background-color 0.3s ease;
 }
 
-.search > .input::placeholder {
-  color: rgba(255, 255, 255, .4);
-}
+.search > .input::placeholder               { color: rgba(255, 255, 255, .4); }
+.search > .input::-webkit-input-placeholder { color: rgba(255, 255, 255, .4); }
+.search > .input::-moz-placeholder          { color: rgba(255, 255, 255, .4); } /* Firefox 19+ */
+.search > .input:-moz-placeholder           { color: rgba(255, 255, 255, .4); } /* Firefox 18- */
+.search > .input:-ms-input-placeholder      { color: rgba(255, 255, 255, .4); }
 
 .search > .input:focus::placeholder {
   opacity: 0;
