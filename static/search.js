@@ -1,51 +1,64 @@
 function escapeHtml(text) {
-  const repl = {
+  var repl = {
     '"': '&quot;',
     '&': '&amp;',
     '<': '&lt;',
     '>': '&gt;'
   };
-  return text.replace(/["&<>]/g, a => repl[a]);
+  return text.replace(/["&<>]/g, function(a) { return repl[a] });
 }
 
-const SEARCH_THROTTLE = 300;
-const MAX_RESULTS = 5;
-const items = [];
-let suggestions = [];
-let focused = -1;
+// ==== constants ====
+
+var SEARCH_THROTTLE = 300;
+var MAX_RESULTS = 5;
+
+// ==== data items ====
+
+var items = [];
+var suggestions = [];
+var focused = -1;
+
+// ==== dom element refs ====
+
+var inputEl;
+var suggestionsEl;
+var searchesEl;
+
+// ==== renderers ====
 
 function renderSearches() {
-  const searches = document.querySelector('.searches');
-
-  const text = items.map((item, i) =>
-    [
-      '<div class="search-item">',
-        '<div class="title">', escapeHtml(item.text), '</div>',
-        '<div class="time">', item.date.toLocaleString(), '</div>',
-        '<div class="remove" onClick="javascript: removeSearchItem(', i, ')">',
+  var text = items.map(function(item, i) {
+    return [
+      '<li class="item">',
+        '<h4 class="title">', escapeHtml(item.text), '</h4>',
+        '<time class="time">', item.date.toLocaleString(), '</time>',
+        '<button class="remove" onClick="javascript: removeSearchItem(', i, ')">',
           '<div class="remove-icon"></div>',
-        '</div>',
-      '</div>',
+        '</button>',
+      '</li>',
     ].join(' ')
-  );
+  });
 
-  searches.innerHTML = text.join(' ');
+  searchesEl.innerHTML = text.join(' ');
 }
 
 function renderSuggestions() {
-  const sugg = document.querySelector('.suggestions');
-
-  const text = suggestions.map((item, i) => {
-    const itemClass = 'suggestion-item' + (i === focused ? ' focused' : '');
+  var text = suggestions.map(function(item, i) {
     return [
-      '<div class="', itemClass, '" onClick="javascript: addSearchItem(\'', escapeHtml(item), '\')" onmouseenter="javascript: setFocusedItem(', i, ')">',
+      '<li class="', (i === focused ? 'item focused' : 'item'), '" ',
+        'onClick="javascript: addSearchItem(\'', escapeHtml(item), '\')" ',
+        'onmouseenter="javascript: setFocusedItem(', i, ')" ',
+      '>',
         escapeHtml(item),
-      '</div>',
+      '</li>',
     ].join('')
   });
 
-  sugg.innerHTML = text.join(' ');
+  suggestionsEl.innerHTML = text.join(' ');
 }
+
+// ==== data manipulation ====
 
 function addSearchItem(text) {
   if (!text || !text.trim()) {
@@ -59,7 +72,7 @@ function addSearchItem(text) {
 
   suggestions = [];
 
-  document.querySelector('.search > input').value = '';
+  inputEl.value = '';
 
   renderSearches();
   renderSuggestions();
@@ -71,25 +84,14 @@ function removeSearchItem(i) {
   renderSearches();
 }
 
-function showSuggestions(json) {
-  if (json && json.items) {
-    suggestions = json.items.map(item => item.name).slice(0, MAX_RESULTS);
+function showSuggestions(items) {
+  if (items) {
+    suggestions = items.map(function(item) { return item.name; }).slice(0, MAX_RESULTS);
   } else {
     suggestions = [];
   }
   focused = 0;
   renderSuggestions();
-}
-
-function doSearch() {
-  const val = document.querySelector('.search > input').value;
-
-  if (val) {
-    fetch('https://api.github.com/search/repositories?q=' + encodeURIComponent(val))
-      .then(res => res.json())
-      .then(json => showSuggestions(json))
-      .catch(e => console.error(e));
-  }
 }
 
 function setFocusedItem(f) {
@@ -99,11 +101,29 @@ function setFocusedItem(f) {
   }
 }
 
-let timeout;
+// ==== ajax ====
+
+function doSearch() {
+  var text = inputEl.value.trim();
+
+  if (text !== '') {
+    fetch('https://api.github.com/search/repositories?q=' + encodeURIComponent(text))
+      .then(function(res) { return res.json(); })
+      .then(function(json) { return showSuggestions(json && json.items); })
+      .catch(function(e) { console.error(e) });
+  }
+}
+
+// ==== entry point ====
 
 function onReady() {
-  const input = document.querySelector('.search > input');
-  const onChanged = (event) => {
+  var timeout;
+
+  inputEl = document.querySelector('.search > input');
+  suggestionsEl = document.querySelector('.suggestions');
+  searchesEl = document.querySelector('.searches');
+
+  var onChanged = function(event) {
     if (timeout) {
       clearTimeout(timeout);
     }
@@ -111,17 +131,16 @@ function onReady() {
     if (event.code === 'Enter') {
       if (suggestions.length) {
         addSearchItem(suggestions[focused]);
-        input.value = '';
       }
     } else {
       timeout = setTimeout(doSearch, SEARCH_THROTTLE);
     }
   };
 
-  input.onkeypress = onChanged;
-  input.onkeydown = (event) => {
+  inputEl.onkeypress = onChanged;
+  inputEl.onkeydown = function(event) {
     if (event.code === 'ArrowDown') {
-      setFocusedItem(focused < suggestions.length - 1 ? focused + 1 : suggestions.length);
+      setFocusedItem(focused < suggestions.length - 1 ? focused + 1 : focused);
     }
 
     if (event.code === 'ArrowUp') {

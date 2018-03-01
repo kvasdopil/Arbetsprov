@@ -1,76 +1,101 @@
+@media screen and (max-width: 600px) {
+  html {
+    font-size: 12px;
+  }
+}
+
 body {
   display: flex;
   flex: 1;
   justify-content: center;
+  flex-direction: column;
 
   height: 100vh;
   margin: 0;
-  overflow-y: hidden;
 
   background: #0b254d;
   background: linear-gradient(to bottom, #0b254d, #40559f);
 
   font-family: sans-serif;
   color: white;
+  overflow-y: hidden;
 }
 
 .container {
   flex: 1;
   display: flex;
   flex-direction: column;
-
-  max-width: 600px;
-  overflow-y: auto;
 }
 
+/************************* normalize markup *************************/
 
-.logo {
-  flex: 0 0 12rem;
+ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+h4 {
+  font-weight: normal;
+}
+
+/************************* logo *************************/
+
+.header {
+  flex: 0 0 12em;
   display: flex;
   justify-content: center;
 }
 
-.logo > img {
+.header > object {
   width: 11rem;
+
+  font-size: 3em;
+  align-self: center;
 }
+
+/************************* search field *************************/
 
 .search {
-  flex: 0 0 4.5rem;
+  flex: 0 0 4.5em;
   display: flex;
-  margin: 0 2.5rem 2.5rem 2.5rem;
+
+  margin: 0 2.5em 2.5em 2.5em;
+  border-radius: 5px;
 
   background-color: rgba(255, 255, 255, .4);
-  border-radius: 5px;
 }
 
-.search > input {
+.search > .input {
   width: 100%;
-  padding: 1.5rem 1.5rem 1.5rem 2.8rem;
-
+  padding: 1em 1em 1em 2.8em;
   border: none;
-  background: none;
-  color: white;
-  font-size: 1.4rem;
 
+  color: white;
+  font-size: 1.4em;
+
+  background: none;
   background-image: url(assets/search.svg);
   background-repeat: no-repeat;
   background-position: left;
-  background-position-x: 1rem;
+  background-position-x: 1em;
 }
 
-.search > input:focus {
+.search > .input:focus {
   background-color: rgba(255, 255, 255, .3);
   transition: background-color 0.3s ease;
 }
 
-.search > input::placeholder {
+.search > .input::placeholder {
   color: rgba(255, 255, 255, .4);
 }
 
-.search > input:focus::placeholder {
+.search > .input:focus::placeholder {
   opacity: 0;
   transition: opacity 0.3s ease;
 }
+
+/************************* searches *************************/
 
 .searches {
   background-color: rgba(255, 255, 255, .1);
@@ -78,101 +103,134 @@ body {
 }
 
 .searches > :first-child {
-  margin-top: 2rem;
+  margin-top: 2em;
 }
 
 .searches > :last-child {
-  margin-bottom: 2rem;
+  margin-bottom: 2em;
 }
 
-.search-item {
-  padding: 0 0 0 2rem;
+.searches > .item {
   display: flex;
   align-items: baseline;
 }
 
-.search-item:hover {
+.searches > .item:hover {
   background-color: rgba(255, 255, 255, .1);
-  /* transition: background-color 0.3s ease; */
 }
 
-.search-item > .title {
-  font-size: 1.4rem;
-  padding: 1.5rem;
-  flex: 1;
-
-  text-overflow: ellipsis;
+.searches > .item > * {
   white-space: nowrap;
   overflow-y: auto;
+  text-overflow: ellipsis;
 }
 
-.search-item > .time {
-  padding: 1.5rem;
-  width: 40%;
+.searches > .item > .title {
+  flex: 5;
+
+  padding: 1.5rem 0 1.5rem 4rem;
+  margin: 0;
+
+  font-size: 1.4em;
 }
 
-.search-item > .remove {
-  opacity: 0;
+.searches > .item > .time {
+  flex: 3;
 
+  padding: 1.5em 0 1.5em 1em;
+}
+
+.searches > .item > .remove {
   display: flex;
+  align-self: stretch;
   align-items: center;
 
-  padding: 1.5rem;
+  padding: 1.5em 2.5em;
+  margin: 0;
+  border-width: 0;
+
   background-color: #723E54;
-  align-self: stretch;
+  opacity: 0;
 
   cursor: pointer;
 }
 
-@media screen and (max-width: 600px) {
-  .search-item > .remove {
-    opacity: 1 !important;
-    background: none;
-  }
-}
-
-.search-item:hover > .remove {
+.searches > .item > .remove:focus {
   opacity: 1;
 }
 
+@media screen and (max-width: 600px) {
+  .searches > .item > .remove {
+    opacity: 1;
+
+    background: none;
+
+    padding: 1.5em 1.5em;
+  }
+}
+
+.searches > .item:hover > .remove {
+  opacity: 1;
+}
+
+/************************* emove icon *************************/
+
 .remove-icon {
-  width: .6rem;
-
-  padding: .3rem;
-  background: white;
-  color: grey;
-  border-radius: 3rem;
   display: flex;
-  font-size: .6rem;
-
   justify-content: center;
   align-items: center;
+
+  width: .6em;
+  padding: .2em .5em .3em .5em;
+  border-radius: 3em;
+
+  background: white;
+  color: grey;
 }
 
 .remove-icon:after {
   content: "✕"
 }
 
+/************************* suggestions *************************/
+
 .suggestions-container {
   position: absolute;
+
   width: 100vw;
   max-width: 600px;
-  top: 17rem;
+  top: 17em;
   z-index: 100;
 }
 
 .suggestions {
+  margin: 0 2em;
+  padding: 0;
+
   background-color: white;
   color: black;
-  margin: 0 3rem;
-  font-size: 1.3rem;
+  font-size: 1.3em;
+  list-style: none;
 }
 
-.suggestion-item {
-  padding: 1rem;
+.suggestions > .item {
+  padding: 1em;
 }
 
-.suggestion-item.focused {
+.suggestions > .item.focused {
   background-color: #eeeeee;
   cursor: pointer;
+}
+
+/************************* limit max width for sections *************************/
+
+.limit-width {
+  display: flex;
+  justify-content: center;
+}
+
+.limit-width > * {
+  max-width: 600px;
+  flex: 1;
+  overflow-y: auto;
 }
